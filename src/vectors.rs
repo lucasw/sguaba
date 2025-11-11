@@ -7,10 +7,6 @@ use crate::{
     Coordinate, CoordinateSystem,
 };
 use crate::{LengthPossiblyPer, Vector3};
-use std::fmt::{Display, Formatter};
-use std::marker::PhantomData;
-use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign};
-use std::{fmt, iter::Sum};
 use typenum::{Integer, N1, N2, P2, Z0};
 use uom::si::f64::{Acceleration, Angle, Length, Velocity};
 use uom::si::{acceleration::meter_per_second_squared, length::meter, velocity::meter_per_second};
@@ -30,6 +26,14 @@ use crate::{
     math::RigidBodyTransform,
     systems::BearingDefined,
     vector::{AccelerationVector, LengthVector, VelocityVector},
+};
+
+use core::{
+    convert, fmt,
+    fmt::{Display, Formatter},
+    iter::Sum,
+    marker::PhantomData,
+    ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign},
 };
 
 /// Defines a vector (ie, direction with magnitude) in the coordinate system specified by `In`.
@@ -241,7 +245,7 @@ impl<In> LengthBasedComponents<In, Z0> for Vector<In, Z0> {
         ]
     }
     fn recast_to_length(v: LengthPossiblyPer<Z0>) -> Length {
-        std::convert::identity(v)
+        convert::identity(v)
     }
 }
 

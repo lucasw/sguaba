@@ -1,9 +1,13 @@
 use crate::util::BoundedAngle;
 use crate::Vector;
-use std::fmt::{Display, Formatter};
-use std::marker::PhantomData;
 use uom::si::f64::{Angle, Length};
 use uom::si::{angle::degree, length::meter};
+
+use core::{
+    f64, fmt,
+    fmt::{Display, Formatter},
+    marker::PhantomData,
+};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -194,7 +198,7 @@ impl<In> Default for Bearing<In> {
 }
 
 impl<In> Display for Bearing<In> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "bearing {:?}° at elevation {:?}°",
@@ -316,8 +320,7 @@ impl<In, H1, H2> Builder<In, H1, H2> {
     pub fn elevation(mut self, angle: impl Into<Angle>) -> Option<Builder<In, H1, HasElevation>> {
         let elevation = angle.into();
         let elevation_signed = BoundedAngle::new(elevation).to_signed_range();
-        if !(-std::f64::consts::FRAC_PI_2..=std::f64::consts::FRAC_PI_2).contains(&elevation_signed)
-        {
+        if !(-f64::consts::FRAC_PI_2..=f64::consts::FRAC_PI_2).contains(&elevation_signed) {
             None
         } else {
             self.under_construction.elevation = elevation;
@@ -413,7 +416,7 @@ macro_rules! bearing {
     }};
     (azimuth = rad($az:expr), elevation = rad($el:expr); in $system:ty) => {{
         const _: () = assert!(
-            $el >= -::std::f64::consts::FRAC_PI_2 && $el <= ::std::f64::consts::FRAC_PI_2,
+            $el >= -::f64::consts::FRAC_PI_2 && $el <= ::f64::consts::FRAC_PI_2,
             "elevation must be in [-π/2, π/2] radians"
         );
         $crate::Bearing::<$system>::builder()
@@ -505,7 +508,7 @@ mod tests {
         assert_eq!(bearing6.elevation(), d(-90.0));
 
         // Test with radians at boundaries
-        use std::f64::consts::FRAC_PI_2;
+        use f64::consts::FRAC_PI_2;
         let bearing7 = bearing!(azimuth = rad(0.0), elevation = rad(1.5707963267948966); in Frd);
         assert_relative_eq!(bearing7.elevation().get::<radian>(), FRAC_PI_2);
 
@@ -556,12 +559,12 @@ mod tests {
             };
             Self {
                 elevation: uom::si::f64::Angle::new::<uom::si::angle::radian>(
-                    elevation.rem_euclid(std::f64::consts::PI) - std::f64::consts::FRAC_PI_2,
+                    elevation.rem_euclid(f64::consts::PI) - f64::consts::FRAC_PI_2,
                 ),
                 azimuth: uom::si::f64::Angle::new::<uom::si::angle::radian>(
-                    azimuth.rem_euclid(std::f64::consts::TAU),
+                    azimuth.rem_euclid(f64::consts::TAU),
                 ),
-                system: std::marker::PhantomData,
+                system: PhantomData,
             }
         }
 
@@ -601,8 +604,8 @@ mod tests {
         fn bearing_vector_roundtrip(bearing: Bearing<Frd>) -> () {
             // azimuth won't be preserved if the bearing is along the Z axis
             let mut bearing = bearing;
-            if approx::relative_eq!(bearing.elevation().get::<radian>(), std::f64::consts::FRAC_PI_2)
-                || approx::relative_eq!(bearing.elevation().get::<radian>(), -std::f64::consts::FRAC_PI_2) {
+            if approx::relative_eq!(bearing.elevation().get::<radian>(), f64::consts::FRAC_PI_2)
+                || approx::relative_eq!(bearing.elevation().get::<radian>(), -f64::consts::FRAC_PI_2) {
                 bearing.azimuth = uom::si::f64::Angle::new::<uom::si::angle::radian>(0.);
             }
 

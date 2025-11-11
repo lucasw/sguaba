@@ -6,15 +6,18 @@ use crate::math::RigidBodyTransform;
 use crate::systems::EquivalentTo;
 use crate::vectors::Vector;
 use crate::{engineering, Point3};
-use std::fmt;
-use std::fmt::{Display, Formatter};
-use std::marker::PhantomData;
-use std::ops::{Add, AddAssign, Neg, Sub, SubAssign};
 use uom::si::f64::{Angle, Length};
 use uom::si::length::meter;
 use uom::si::quantities::Ratio;
 use uom::typenum::P2;
 use uom::ConstZero;
+
+use core::{
+    fmt,
+    fmt::{Display, Formatter},
+    marker::PhantomData,
+    ops::{Add, AddAssign, Neg, Sub, SubAssign},
+};
 
 #[cfg(any(test, feature = "approx"))]
 use approx::{AbsDiffEq, RelativeEq};

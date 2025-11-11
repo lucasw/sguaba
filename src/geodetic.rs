@@ -1,6 +1,4 @@
 use crate::{systems::Ecef, util::BoundedAngle, Coordinate, Point3};
-use std::fmt;
-use std::fmt::Display;
 use uom::si::f64::{Angle, Length};
 use uom::si::{
     angle::{degree, radian},
@@ -11,8 +9,9 @@ use uom::si::{
 use approx::{AbsDiffEq, RelativeEq};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-use std::marker::PhantomData;
 use uom::ConstZero;
+
+use core::{f64, fmt, fmt::Display, marker::PhantomData};
 
 // Parameters required for WGS84 ellipsoid
 // https://nsgreg.nga.mil/doc/view?i=4085 table 3.1
@@ -502,8 +501,7 @@ impl<L1, L2, A> Builder<L1, L2, A> {
     pub fn latitude(mut self, latitude: impl Into<Angle>) -> Option<Builder<HasLatitude, L2, A>> {
         let latitude = latitude.into();
         let latitude_in_signed_radians = BoundedAngle::new(latitude).to_signed_range();
-        if !(-std::f64::consts::FRAC_PI_2..=std::f64::consts::FRAC_PI_2)
-            .contains(&latitude_in_signed_radians)
+        if !(-f64::consts::FRAC_PI_2..=f64::consts::FRAC_PI_2).contains(&latitude_in_signed_radians)
         {
             None
         } else {
@@ -627,7 +625,7 @@ macro_rules! wgs84 {
     }};
     (latitude = rad($lat:expr), longitude = rad($lng:expr), altitude = m($alt:expr)) => {{
         const _: () = assert!(
-            $lat >= -std::f64::consts::FRAC_PI_2 && $lat <= std::f64::consts::FRAC_PI_2,
+            $lat >= -f64::consts::FRAC_PI_2 && $lat <= f64::consts::FRAC_PI_2,
             "latitude must be in [-π/2, π/2] radians"
         );
         $crate::systems::Wgs84::builder()
@@ -641,7 +639,7 @@ macro_rules! wgs84 {
     }};
     (latitude = rad($lat:expr), longitude = rad($lng:expr), altitude = km($alt:expr)) => {{
         const _: () = assert!(
-            $lat >= -std::f64::consts::FRAC_PI_2 && $lat <= std::f64::consts::FRAC_PI_2,
+            $lat >= -f64::consts::FRAC_PI_2 && $lat <= f64::consts::FRAC_PI_2,
             "latitude must be in [-π/2, π/2] radians"
         );
         $crate::systems::Wgs84::builder()
@@ -707,9 +705,9 @@ mod tests {
             };
             Self {
                 latitude: Angle::new::<radian>(
-                    latitude.rem_euclid(std::f64::consts::PI) - std::f64::consts::FRAC_PI_2,
+                    latitude.rem_euclid(f64::consts::PI) - f64::consts::FRAC_PI_2,
                 ),
-                longitude: Angle::new::<radian>(longitude.rem_euclid(std::f64::consts::TAU)),
+                longitude: Angle::new::<radian>(longitude.rem_euclid(f64::consts::TAU)),
                 altitude: Length::new::<meter>(
                     // Generates values ranged ECEF_TO_WGS84_MIN_ALTITUDE_M..ECEF_TO_WGS84_MAX_ALTITUDE_M
                     altitude
@@ -812,7 +810,7 @@ mod tests {
         assert_eq!(location6.latitude(), d(-90.0));
 
         // Test with radians at boundaries
-        use std::f64::consts::FRAC_PI_2;
+        use f64::consts::FRAC_PI_2;
         let location7 = wgs84!(
             latitude = rad(1.5707963267948966),
             longitude = rad(0.0),
