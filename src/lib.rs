@@ -258,7 +258,7 @@
 //! ```
 
 // fixme: uncomment once transition to no_std is done
-// #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 use typenum::{P1, Z0};
 use uom::{

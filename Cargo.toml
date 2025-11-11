@@ -10,19 +10,18 @@ keywords = ["spatial", "rigid-body", "coordinates", "coordinate-systems"]
 categories = ["aerospace", "mathematics"]
 
 [features]
-default = ["serde", "approx", "libm"]
+default = ["serde", "approx"]
 serde = ["dep:serde", "nalgebra/serde-serialize", "uom/use_serde"]
 approx = ["dep:approx"]
 std = []
-libm = ["dep:libm"] # aka no_std
 
 [dependencies]
-approx = { version = "0.5.1", optional = true }
-libm = { version = "0.2.15", optional = true }
-nalgebra = { version = "0.33.2" }
-serde = { version = "1.0.215", features = ["derive"], optional = true }
-typenum = "1.18.0"
-uom = { version = "0.37.0", default-features = false, features = ["autoconvert", "std", "si", "f64"] }
+approx = { version = "0.5.1", default-features = false, optional = true }
+libm = { version = "0.2.15" }
+nalgebra = { version = "0.33.2", default-features = false }
+serde = { version = "1.0.215", default-features = false, features = ["derive"], optional = true }
+typenum = { version = "1.18.0", default-features = false }
+uom = { version = "0.37.0", default-features = false, features = ["autoconvert", "si", "f64"] }
 
 [dev-dependencies]
 nav-types = "0.5.2"

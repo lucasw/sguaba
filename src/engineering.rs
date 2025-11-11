@@ -34,10 +34,26 @@ use crate::coordinates::Coordinate;
 use crate::math::{RigidBodyTransform, Rotation};
 use crate::systems::EquivalentTo;
 use crate::{Point3, Vector};
-use std::marker::PhantomData;
-use std::ops::Mul;
 use uom::si::f64::{Angle, Length};
 use uom::ConstZero;
+
+#[cfg(not(feature = "std"))]
+use core::{
+    // convert::From,
+    // fmt,
+    // fmt::{Display, Formatter},
+    marker::PhantomData,
+    ops::Mul,
+};
+
+#[cfg(feature = "std")]
+use std::{
+    // convert::From,
+    // fmt,
+    // fmt::{Display, Formatter},
+    marker::PhantomData,
+    ops::Mul,
+};
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};

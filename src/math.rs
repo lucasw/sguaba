@@ -28,13 +28,26 @@ use crate::{
     CoordinateSystem, Isometry3, UnitQuaternion,
 };
 use nalgebra::{Matrix3, Rotation3, Translation3};
-use std::convert::From;
-use std::fmt;
-use std::fmt::{Display, Formatter};
-use std::marker::PhantomData;
-use std::ops::{Mul, Neg};
 use uom::si::angle::radian;
 use uom::si::f64::Angle;
+
+#[cfg(not(feature = "std"))]
+use core::{
+    convert::From,
+    fmt,
+    fmt::{Display, Formatter},
+    marker::PhantomData,
+    ops::{Mul, Neg},
+};
+
+#[cfg(feature = "std")]
+use std::{
+    convert::From,
+    fmt,
+    fmt::{Display, Formatter},
+    marker::PhantomData,
+    ops::{Mul, Neg},
+};
 
 #[cfg(any(test, feature = "approx"))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -1405,9 +1418,9 @@ impl<From, To> RelativeEq for RigidBodyTransform<From, To> {
 pub mod tait_bryan_builder {
     use super::*;
     use crate::engineering::Orientation;
-    use std::marker::PhantomData;
     use uom::si::f64::Angle;
     use uom::ConstZero;
+    use PhantomData;
 
     /// State marker indicating yaw angle is needed next
     pub struct NeedsYaw;
@@ -1445,22 +1458,22 @@ pub mod tait_bryan_builder {
 
     impl<State, Target> Copy for TaitBryanBuilder<State, Target> {}
 
-    impl<Target> std::fmt::Debug for TaitBryanBuilder<NeedsYaw, Target> {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    impl<Target> fmt::Debug for TaitBryanBuilder<NeedsYaw, Target> {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             f.debug_struct("TaitBryanBuilder<NeedsYaw>").finish()
         }
     }
 
-    impl<Target> std::fmt::Debug for TaitBryanBuilder<NeedsPitch, Target> {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    impl<Target> fmt::Debug for TaitBryanBuilder<NeedsPitch, Target> {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             f.debug_struct("TaitBryanBuilder<NeedsPitch>")
                 .field("yaw", &self.yaw)
                 .finish()
         }
     }
 
-    impl<Target> std::fmt::Debug for TaitBryanBuilder<NeedsRoll, Target> {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    impl<Target> fmt::Debug for TaitBryanBuilder<NeedsRoll, Target> {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             f.debug_struct("TaitBryanBuilder<NeedsRoll>")
                 .field("yaw", &self.yaw)
                 .field("pitch", &self.pitch)
@@ -1468,8 +1481,8 @@ pub mod tait_bryan_builder {
         }
     }
 
-    impl<Target> std::fmt::Debug for TaitBryanBuilder<Complete, Target> {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    impl<Target> fmt::Debug for TaitBryanBuilder<Complete, Target> {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             f.debug_struct("TaitBryanBuilder<Complete>")
                 .field("yaw", &self.yaw)
                 .field("pitch", &self.pitch)
